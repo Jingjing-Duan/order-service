@@ -20,12 +20,14 @@ const PORT = process.env.PORT || 3000;  // Fallback to port 3000 if not defined
 
 // Define a POST route for creating orders
 app.post('/orders', (req, res) => {
+  console.log(">>> /orders hit", new Date().toISOString(), req.body);
   const order = req.body; // Extract the order data from the request body.
   
   // Connect to RabbitMQ server
   amqp.connect(RABBITMQ_CONNECTION_STRING, (err, conn) => {
     if (err) {
       // If an error occurs while connecting to RabbitMQ, send a 500 status and error message.
+      console.error("RabbitMQ connect error:", err);
       return res.status(500).send('Error connecting to RabbitMQ');
     }
 
@@ -33,6 +35,7 @@ app.post('/orders', (req, res) => {
     conn.createChannel((err, channel) => {
       if (err) {
         // If an error occurs while creating a channel, send a 500 status and error message.
+        console.error("RabbitMQ channel error:", err);
         return res.status(500).send('Error creating channel');
       }
 
